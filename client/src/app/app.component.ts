@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ChatService } from './services/chat.service';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -17,15 +18,10 @@ export class AppComponent {
     this.message = '';
   }
 
-  ngOnInit() {
+  ngOnInit() {    
     this.chatService
       .getMessages()
-      .distinctUntilChanged()
-      .filter((message) => message.trim().length > 0)
-      .throttleTime(1000)
-      .scan((acc: string, message: string, index: number) =>
-          `${message}(${index + 1})`
-        , 1)
+      .pipe(distinctUntilChanged())
       .subscribe((message:string) => {
         this.messages.push(message);
       });
